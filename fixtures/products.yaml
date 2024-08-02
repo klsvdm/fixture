@@ -1,0 +1,14 @@
+sweets:
+  - name: chocolate
+    price: 1
+  - name: vanilla
+    price: 2
+  - name: strawberry
+    price: 3
+grocery:
+  - name: milk
+    price: 4
+  - name: bread
+    price: 5
+  - name: cheese
+    price: 6

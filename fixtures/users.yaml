@@ -1,0 +1,15 @@
+- name: Alex
+  age: 25
+  email: alex@example.com
+- name: Bob
+  age: 30
+  email: bob@example.com
+- name: Charlie
+  age: 26
+  email: charlie@example.com
+- name: David
+  age: 18
+  email: david@example.com
+- name: Erin
+  age: 35
+  email: erin@example.com
