@@ -53,11 +53,19 @@ func MustLoad(path string) Fixture {
 	return fixture
 }
 
-func GetList[T any](t *testing.T, f Fixture, name string) []T {
+func GetList[T any](t *testing.T, f Fixture, name string, opts ...Option) []T {
 	data := make([]T, 0)
 
 	if err := f.get(name, &data); err != nil {
 		t.Fatalf(err.Error())
+	}
+
+	o := applyOptions(opts)
+
+	if o.editor != nil {
+		for i := range data {
+			o.editor(&data[i])
+		}
 	}
 
 	return data
