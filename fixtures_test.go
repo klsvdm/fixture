@@ -70,7 +70,7 @@ func Test_Fixtures(t *testing.T) {
 	})
 
 	t.Run("list fixture with editor", func(t *testing.T) {
-		users := GetList[__user](t, fixture, "users", WithEditor[__user](func(user *__user) {
+		users := GetList[__user](t, fixture, "users", WithEditor(func(user *__user) {
 			user.Name = "test"
 		}))
 

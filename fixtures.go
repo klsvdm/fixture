@@ -53,7 +53,7 @@ func MustLoad(path string) Fixture {
 	return fixture
 }
 
-func GetList[T any](t *testing.T, f Fixture, name string, opts ...Option) []T {
+func GetList[T any](t *testing.T, f Fixture, name string, opts ...Option[T]) []T {
 	data := make([]T, 0)
 
 	if err := f.get(name, &data); err != nil {
