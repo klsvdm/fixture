@@ -92,4 +92,28 @@ func Test_Fixtures(t *testing.T) {
 			t.Errorf("nested catalog was not loaded")
 		}
 	})
+
+	t.Run("object fixture", func(t *testing.T) {
+		usersData, err := os.ReadFile("./fixtures/nested/user.yml")
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		var expectedUser __user
+		_ = yaml.Unmarshal(usersData, &expectedUser)
+
+		user := Get[__user](t, fixture, "nested/user")
+
+		if user.Name != expectedUser.Name {
+			t.Errorf("expected %v, got %v", expectedUser, user)
+		}
+
+		if user.Age != expectedUser.Age {
+			t.Errorf("expected %v, got %v", expectedUser, user)
+		}
+
+		if user.Email != expectedUser.Email {
+			t.Errorf("expected %v, got %v", expectedUser, user)
+		}
+	})
 }

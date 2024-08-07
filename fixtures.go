@@ -78,6 +78,22 @@ func traverseDir(path, prefix string) (map[string][]byte, error) {
 	return data, nil
 }
 
+func Get[T any](t *testing.T, f Fixture, name string, opts ...Option[T]) T {
+	var data T
+
+	if err := f.get(name, &data); err != nil {
+		t.Fatalf(err.Error())
+	}
+
+	o := applyOptions(opts)
+
+	if o.editor != nil {
+		o.editor(&data)
+	}
+
+	return data
+}
+
 func GetList[T any](t *testing.T, f Fixture, name string, opts ...Option[T]) []T {
 	data := make([]T, 0)
 
