@@ -6,13 +6,16 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"testing"
 
 	"gopkg.in/yaml.v3"
 )
 
 type Fixture struct {
 	data map[string][]byte
+}
+
+type Testing interface {
+	Fatalf(msg string, args ...any)
 }
 
 func Load(path string) (Fixture, error) {
@@ -78,7 +81,7 @@ func traverseDir(path, prefix string) (map[string][]byte, error) {
 	return data, nil
 }
 
-func Get[T any](t *testing.T, f Fixture, name string, opts ...Option[T]) T {
+func Get[T any](t Testing, f Fixture, name string, opts ...Option[T]) T {
 	var data T
 
 	if err := f.get(name, &data); err != nil {
@@ -94,7 +97,7 @@ func Get[T any](t *testing.T, f Fixture, name string, opts ...Option[T]) T {
 	return data
 }
 
-func GetList[T any](t *testing.T, f Fixture, name string, opts ...Option[T]) []T {
+func GetList[T any](t Testing, f Fixture, name string, opts ...Option[T]) []T {
 	data := make([]T, 0)
 
 	if err := f.get(name, &data); err != nil {
@@ -112,7 +115,7 @@ func GetList[T any](t *testing.T, f Fixture, name string, opts ...Option[T]) []T
 	return data
 }
 
-func GetMap[T any](t *testing.T, f Fixture, name string) map[string]T {
+func GetMap[T any](t Testing, f Fixture, name string) map[string]T {
 	data := make(map[string]T)
 
 	if err := f.get(name, &data); err != nil {
