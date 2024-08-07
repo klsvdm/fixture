@@ -2,6 +2,7 @@ package fixtures
 
 import (
 	"fmt"
+	"maps"
 	"os"
 	"path/filepath"
 	"strings"
@@ -15,9 +16,18 @@ type Fixture struct {
 }
 
 func Load(path string) (Fixture, error) {
-	files, err := os.ReadDir(path)
+	data, err := traverseDir(path, "")
 	if err != nil {
-		return Fixture{}, fmt.Errorf("failed to read fixtures folder '%s': %w", path, err)
+		return Fixture{}, fmt.Errorf("failed to load fixtures: %w", err)
+	}
+
+	return Fixture{data: data}, nil
+}
+
+func traverseDir(path, prefix string) (map[string][]byte, error) {
+	files, err := os.ReadDir(filepath.Join(path, prefix))
+	if err != nil {
+		return nil, fmt.Errorf("failed to read fixtures folder '%s': %w", path, err)
 	}
 
 	data := make(map[string][]byte, len(files))
@@ -25,10 +35,21 @@ func Load(path string) (Fixture, error) {
 	for _, file := range files {
 		var (
 			ext      = filepath.Ext(file.Name())
-			filePath = filepath.Join(path, file.Name())
+			filePath = filepath.Join(path, prefix, file.Name())
 		)
 
-		if file.IsDir() || (ext != ".yaml" && ext != ".yml") {
+		if file.IsDir() {
+			dirData, err := traverseDir(path, filepath.Join(prefix, file.Name()))
+			if err != nil {
+				return nil, fmt.Errorf("failed to read fixtures folder '%s': %w", path, err)
+			}
+
+			maps.Copy(data, dirData)
+
+			continue
+		}
+
+		if ext != ".yaml" && ext != ".yml" {
 			continue
 		}
 
@@ -37,20 +58,15 @@ func Load(path string) (Fixture, error) {
 			continue
 		}
 
-		name := strings.TrimSuffix(file.Name(), ext)
+		name := prefix + "/" + strings.TrimSuffix(file.Name(), ext)
+		if prefix == "" {
+			name = name[1:]
+		}
+
 		data[name] = content
 	}
 
-	return Fixture{data: data}, nil
-}
-
-func MustLoad(path string) Fixture {
-	fixture, err := Load(path)
-	if err != nil {
-		panic(err)
-	}
-
-	return fixture
+	return data, nil
 }
 
 func GetList[T any](t *testing.T, f Fixture, name string, opts ...Option[T]) []T {

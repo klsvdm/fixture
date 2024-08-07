@@ -19,6 +19,11 @@ type __product struct {
 	Price int    `yaml:"price"`
 }
 
+type __catalog struct {
+	ID   string `yaml:"id"`
+	Name string `yaml:"name"`
+}
+
 func Test_Fixtures(t *testing.T) {
 	fixture, err := Load("./fixtures")
 	if err != nil {
@@ -78,6 +83,13 @@ func Test_Fixtures(t *testing.T) {
 			if user.Name != "test" {
 				t.Errorf("expected 'test', got '%s'", user.Name)
 			}
+		}
+	})
+
+	t.Run("nested fixture", func(t *testing.T) {
+		users := GetList[__catalog](t, fixture, "nested/catalog")
+		if len(users) == 0 {
+			t.Errorf("nested catalog was not loaded")
 		}
 	})
 }
