@@ -24,6 +24,15 @@ func Load(path string) (Fixture, error) {
 	return Fixture{data: data}, nil
 }
 
+func MustLoad(path string) Fixture {
+	f, err := Load(path)
+	if err != nil {
+		panic(err)
+	}
+
+	return f
+}
+
 func traverseDir(path, prefix string) (map[string][]byte, error) {
 	files, err := os.ReadDir(filepath.Join(path, prefix))
 	if err != nil {
